@@ -1,38 +1,79 @@
 <?php
-$data_mahasiswa = array();
+// Encapsulation
+class Produk {
+    private $nama;
+    private $harga;
 
-function hitungNilaiHuruf($nilai) {
-    if ($nilai >= 85) {
-        return "A";
-    } elseif ($nilai >= 80) {
-        return "B+";
-    } elseif ($nilai >= 70) {
-        return "B";
-    } elseif ($nilai >= 65) {
-        return "C+";
-    } elseif ($nilai >= 60) {
-        return "C";
-    } elseif ($nilai >= 50) {
-        return "D";
-    } else {
-        return "E";
+    public function __construct($nama, $harga) {
+        $this->nama = $nama;
+        $this->harga = $harga;
+    }
+
+    public function getNama() {
+        return $this->nama;
+    }
+
+    public function getHarga() {
+        return $this->harga;
     }
 }
 
-if (isset($_POST['submit'])) {
-    $nama = $_POST['nama'];
-    $nim = $_POST['nim'];
-    $nilai_angka = $_POST['nilai'];
+// Inheritance
+class Cemilan extends Produk {
+    private $jenis;
 
-    $nilai_huruf = hitungNilaiHuruf($nilai_angka);
+    public function __construct($nama, $harga, $jenis) {
+        parent::__construct($nama, $harga);
+        $this->jenis = $jenis;
+    }
 
-    $data_mahasiswa[] = array(
-        'nama' => $nama,
-        'nim' => $nim,
-        'nilai_angka' => $nilai_angka,
-        'nilai_huruf' => $nilai_huruf
-    );
+    public function getDetail() {
+        return "Nama: " . $this->getNama() . ", Harga: Rp." . $this->getHarga() . ", Jenis: " . $this->jenis;
+    }
 }
+
+// Polymorphism
+class MakananPoli {
+    public function deskripsi() {
+        return "Ini adalah makanan.";
+    }
+}
+
+class MinumanPoli {
+    public function deskripsi() {
+        return "Ini adalah minuman.";
+    }
+}
+
+function tampilkanDeskripsi($item) {
+    return $item->deskripsi() . "<br>";
+}
+
+// Abstraction (Abstract Class)
+abstract class Hidangan {
+    abstract public function caraMakan();
+}
+
+class Nasi extends Hidangan {
+    public function caraMakan() {
+        return "Nasi dimakan dengan sendok atau tangan.";
+    }
+}
+
+class Jus extends Hidangan {
+    public function caraMakan() {
+        return "Jus diminum dengan gelas.";
+    }
+}
+
+// Membuat objek untuk demonstrasi
+$makananPoli = new MakananPoli();
+$minumanPoli = new MinumanPoli();
+
+$cemilan = new Cemilan("Keripik", 10000, "Snack");
+
+$nasi = new Nasi();
+$jus = new Jus();
 ?>
 
 <!DOCTYPE html>
@@ -40,41 +81,94 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Input Nilai Mahasiswa</title>
+    <title>Tugas Pemrograman Internet</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            border: 1px solid black;
+            border-collapse: collapse;
+            font-size: 18px; 
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 15px; 
+            text-align: center; 
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-    <h2>Input Nilai Pemrograman Internet</h2>
-    <form method="POST" action="">
-        <label for="nama">Nama:</label><br>
-        <input type="text" id="nama" name="nama" required><br><br>
+    <h1>Tugas Pemrograman Internet</h1> 
+    <table>
+        <tr>
+            <th>Menggunakan Objek</th>
+            <td>
+                Makanan: Ini adalah objek makanan.<br>
+                Minuman: Ini adalah objek minuman.
+            </td>
+        </tr>
+        <tr>
+            <th>Menggunakan Encapsulation</th>
+            <td>
+                Nama Produk: <?php echo $cemilan->getNama(); ?><br>
+                Harga Produk: Rp.<?php echo $cemilan->getHarga(); ?>
+            </td>
+        </tr>
+        <tr>
+            <th>Menggunakan Inheritance</th>
+            <td><?php echo $cemilan->getDetail(); ?></td>
+        </tr>
+        <tr>
+            <th>Menggunakan Polimorfisme</th>
+            <td>
+                <?php echo tampilkanDeskripsi($makananPoli); ?>
+                <?php echo tampilkanDeskripsi($minumanPoli); ?>
+            </td>
+        </tr>
+        <tr>
+            <th>Menggunakan Abstraction</th>
+            <td>
+                Cara makan Nasi: <?php echo $nasi->caraMakan(); ?><br>
+                Cara minum Jus: <?php echo $jus->caraMakan(); ?>
+            </td>
+        </tr>
+        <tr>
+            <th>Menggunakan Access Modifier</th>
+            <td>
+                Nama Produk (Private): <?php echo $cemilan->getNama(); ?><br>
+                Harga Produk (Private): Rp.<?php echo $cemilan->getHarga(); ?>
+            </td>
+        </tr>
+        <tr>
+            <th>Menggunakan Include</th>
+            <td>
+                <?php
+                // Include the external files
+                include 'Makanan.php';
+                include 'Minuman.php';
 
-        <label for="nim">NIM:</label><br>
-        <input type="text" id="nim" name="nim" required><br><br>
-
-        <label for="nilai">Nilai (0-100):</label><br>
-        <input type="number" id="nilai" name="nilai" min="0" max="100" required><br><br>
-
-        <input type="submit" name="submit" value="Submit">
-    </form>
-
-    <?php if (isset($_POST['submit'])): ?>
-        <h3>Hasil Input:</h3>
-        <table border="1" cellpadding="10" cellspacing="0">
-            <tr>
-                <th>Nama</th>
-                <th>NIM</th>
-                <th>Nilai Angka</th>
-                <th>Nilai Huruf</th>
-            </tr>
-            <?php foreach ($data_mahasiswa as $mahasiswa): ?>
-            <tr>
-                <td><?php echo $mahasiswa['nama']; ?></td>
-                <td><?php echo $mahasiswa['nim']; ?></td>
-                <td><?php echo $mahasiswa['nilai_angka']; ?></td>
-                <td><?php echo $mahasiswa['nilai_huruf']; ?></td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-    <?php endif; ?>
+                // Membuat objek dari file yang di-include
+                $makananInclude = new Makanan();
+                $minumanInclude = new Minuman();
+                ?>
+                Makanan: <?php echo $makananInclude->deskripsi(); ?><br>
+                Minuman: <?php echo $minumanInclude->deskripsi(); ?>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
